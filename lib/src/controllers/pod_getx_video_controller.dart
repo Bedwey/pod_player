@@ -68,9 +68,10 @@ class PodGetXVideoController extends _PodGesturesController {
       update();
 
       update(['update-all']);
-      // ignore: unawaited_futures
-      Future<void>.delayed(const Duration(milliseconds: 600))
-          .then((_) => _isWebAutoPlayDone = true);
+      unawaited(
+        Future<void>.delayed(const Duration(milliseconds: 600))
+            .then((_) => _isWebAutoPlayDone = true),
+      );
     } catch (e) {
       podVideoStateChanger(PodVideoState.error);
       update(['errorState']);
@@ -93,7 +94,6 @@ class PodGetXVideoController extends _PodGesturesController {
           httpHeaders: playVideoFrom.httpHeaders,
         );
         playingVideoUrl = playVideoFrom.dataSource;
-        break;
       case PodVideoPlayerType.networkQualityUrls:
         final url = await getUrlFromVideoQualityUrls(
           qualityList: podPlayerConfig.videoQualityPriority,
@@ -110,7 +110,6 @@ class PodGetXVideoController extends _PodGesturesController {
         );
         playingVideoUrl = url;
 
-        break;
       case PodVideoPlayerType.youtube:
         final urls = await getVideoQualityUrlsFromYoutube(
           playVideoFrom.dataSource!,
@@ -131,7 +130,6 @@ class PodGetXVideoController extends _PodGesturesController {
         );
         playingVideoUrl = url;
 
-        break;
       case PodVideoPlayerType.vimeo:
         await getQualityUrlsFromVimeoId(
           playVideoFrom.dataSource!,
@@ -151,7 +149,6 @@ class PodGetXVideoController extends _PodGesturesController {
         );
         playingVideoUrl = url;
 
-        break;
       case PodVideoPlayerType.asset:
 
         ///
@@ -163,7 +160,6 @@ class PodGetXVideoController extends _PodGesturesController {
         );
         playingVideoUrl = playVideoFrom.dataSource;
 
-        break;
       case PodVideoPlayerType.file:
         if (kIsWeb) {
           throw Exception('file doesnt support web');
@@ -176,7 +172,6 @@ class PodGetXVideoController extends _PodGesturesController {
           videoPlayerOptions: playVideoFrom.videoPlayerOptions,
         );
 
-        break;
       case PodVideoPlayerType.vimeoPrivateVideos:
         await getQualityUrlsFromVimeoPrivateId(
           playVideoFrom.dataSource!,
@@ -195,39 +190,37 @@ class PodGetXVideoController extends _PodGesturesController {
           httpHeaders: playVideoFrom.httpHeaders,
         );
         playingVideoUrl = url;
-
-        break;
     }
   }
 
   ///Listning on keyboard events
   void onKeyBoardEvents({
-    required RawKeyEvent event,
+    required KeyEvent event,
     required BuildContext appContext,
     required String tag,
   }) {
     if (kIsWeb) {
-      if (event.isKeyPressed(LogicalKeyboardKey.space)) {
+      if (event.logicalKey == LogicalKeyboardKey.space) {
         togglePlayPauseVideo();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.keyM)) {
+      if (event.logicalKey == LogicalKeyboardKey.keyM) {
         toggleMute();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         onLeftDoubleTap();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
         onRightDoubleTap();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.keyF) &&
+      if (event.logicalKey == LogicalKeyboardKey.keyF &&
           event.logicalKey.keyLabel == 'F') {
         toggleFullScreenOnWeb(appContext, tag);
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+      if (event.logicalKey == LogicalKeyboardKey.escape) {
         if (isFullScreen) {
           uni_html.document.exitFullscreen();
           if (!isWebPopupOverlayOpen) {
@@ -259,18 +252,14 @@ class PodGetXVideoController extends _PodGesturesController {
       case PodVideoState.playing:
         if (podPlayerConfig.wakelockEnabled) WakelockPlus.enable();
         playVideo(true);
-        break;
       case PodVideoState.paused:
         if (podPlayerConfig.wakelockEnabled) WakelockPlus.disable();
         playVideo(false);
-        break;
       case PodVideoState.loading:
         isShowOverlay(true);
-        break;
       case PodVideoState.error:
         if (podPlayerConfig.wakelockEnabled) WakelockPlus.disable();
         playVideo(false);
-        break;
     }
   }
 

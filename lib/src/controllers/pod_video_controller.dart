@@ -81,13 +81,11 @@ class _PodVideoController extends _PodUiController {
     isvideoPlaying = val;
     if (isvideoPlaying) {
       isShowOverlay(true);
-      // ignore: unawaited_futures
-      _videoCtr?.play();
+      unawaited(_videoCtr?.play());
       isShowOverlay(false, delay: const Duration(seconds: 1));
     } else {
       isShowOverlay(true);
-      // ignore: unawaited_futures
-      _videoCtr?.pause();
+      unawaited(_videoCtr?.pause());
     }
   }
 
@@ -206,7 +204,7 @@ class _PodVideoController extends _PodUiController {
               SystemUiMode.manual,
               overlays: SystemUiOverlay.values,
             ),
-          ]
+          ],
         ]);
       }
 
